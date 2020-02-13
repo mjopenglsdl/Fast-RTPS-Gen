@@ -90,6 +90,8 @@ public class fastrtpsgen {
     private ArrayList m_lineCommandForWorkDirSet = null;
     private String m_spTemplate = "main";
 
+    private boolean m_bUseMinGW = true;
+
     private static VSConfiguration m_vsconfigurations[]={new VSConfiguration("Debug DLL", "Win32", true, true),
         new VSConfiguration("Release DLL", "Win32", false, true),
         new VSConfiguration("Debug", "Win32", true, false),
@@ -335,7 +337,7 @@ public class fastrtpsgen {
 
                 for (String include : project.getIDLIncludeFiles())
                 {
-                    //System.out.println(ColorMessage.error() + m_idlFiles.get(count) +  " includes " + include);
+                    System.out.println(ColorMessage.error() + m_idlFiles.get(count) +  " includes " + include);
                     includedIDL.add(include);
                 }
 
@@ -998,7 +1000,11 @@ public class fastrtpsgen {
 
         if (ppPath == null) {
             if (m_os.contains("Windows")) {
-                ppPath = "cl.exe";
+                if(!m_bUseMinGW){
+                    ppPath = "cl.exe";
+                }else{
+                    ppPath = "cpp.exe";
+                }
             } else if (m_os.contains("Linux") || m_os.contains("Mac")) {
                 ppPath = "cpp";
             }
@@ -1017,8 +1023,10 @@ public class fastrtpsgen {
         }
 
         if (m_os.contains("Windows")) {
-            lineCommand.add("/E");
-            lineCommand.add("/C");
+            if(!m_bUseMinGW){
+                lineCommand.add("/E");
+                lineCommand.add("/C");
+            }
         }
 
         // Add input file.
